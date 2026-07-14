@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #10202f;
+
+  /* Bleu institutionnel */
+  --color-brand-50: #eef4fb;
+  --color-brand-100: #d7e6f5;
+  --color-brand-200: #b0cceb;
+  --color-brand-300: #82aedd;
+  --color-brand-400: #4d84c4;
+  --color-brand-500: #2c63a3;
+  --color-brand-600: #1f4c82;
+  --color-brand-700: #1a3d69;
+  --color-brand-800: #163256;
+  --color-brand-900: #0f2440;
+  --color-brand-950: #0a1830;
+
+  /* Vert transition énergétique */
+  --color-energy-50: #ecfaf3;
+  --color-energy-100: #d1f3e1;
+  --color-energy-200: #a3e6c5;
+  --color-energy-300: #6fd3a6;
+  --color-energy-400: #3fbb87;
+  --color-energy-500: #269e6d;
+  --color-energy-600: #1a7f58;
+  --color-energy-700: #176548;
+  --color-energy-800: #14513c;
+  --color-energy-900: #114332;
+  --color-energy-950: #08251b;
+
+  /* Gris clair neutre */
+  --color-neutral-50: #f7f8fa;
+  --color-neutral-100: #eef0f3;
+  --color-neutral-200: #dde1e6;
+  --color-neutral-300: #c3c9d1;
+  --color-neutral-400: #9aa3b0;
+  --color-neutral-500: #717c8c;
+  --color-neutral-600: #545e6d;
+  --color-neutral-700: #3f4753;
+  --color-neutral-800: #2a313b;
+  --color-neutral-900: #1a1f27;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+  --color-brand-950: var(--color-brand-950);
+
+  --color-energy-50: var(--color-energy-50);
+  --color-energy-100: var(--color-energy-100);
+  --color-energy-200: var(--color-energy-200);
+  --color-energy-300: var(--color-energy-300);
+  --color-energy-400: var(--color-energy-400);
+  --color-energy-500: var(--color-energy-500);
+  --color-energy-600: var(--color-energy-600);
+  --color-energy-700: var(--color-energy-700);
+  --color-energy-800: var(--color-energy-800);
+  --color-energy-900: var(--color-energy-900);
+  --color-energy-950: var(--color-energy-950);
+
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+  --color-neutral-900: var(--color-neutral-900);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+@layer utilities {
+  .container-site {
+    @apply mx-auto w-full max-w-7xl px-6 lg:px-8;
+  }
+}
