@@ -120,4 +120,6 @@ export type Partner = {
   contactName?: string
   contactEmail?: string
   city?: string
+  /** Chemin vers le logo dans /public (ex. "/logos/greenbirdie.svg"). Si absent, le nom du partenaire est affiché en texte. */
+  logoUrl?: string
 }

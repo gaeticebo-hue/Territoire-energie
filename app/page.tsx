@@ -10,11 +10,11 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <PartnersBand />
       <StatsBand />
       <HowItWorks />
       <ProgrammesPreview />
       <AudiencesBand />
-      <PartnersBand />
       <CTABand />
     </>
   )

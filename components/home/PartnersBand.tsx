@@ -1,9 +1,10 @@
+import Image from "next/image"
 import Link from "next/link"
 import { partners } from "@/lib/data/partenaires"
 
 export function PartnersBand() {
   return (
-    <section className="border-y border-neutral-200 bg-white py-16">
+    <section className="border-b border-neutral-200 bg-white py-16">
       <div className="container-site">
         <p className="text-center text-sm font-semibold uppercase tracking-wide text-neutral-500">
           Un programme coordonné par
@@ -13,10 +14,20 @@ export function PartnersBand() {
             <Link
               key={partner.id}
               href="/partenaires"
-              className="flex flex-col items-center justify-center rounded-lg border border-neutral-200 px-4 py-6 text-center transition-colors hover:border-brand-300 hover:bg-brand-50"
+              className="group flex flex-col items-center justify-center gap-2 rounded-lg border border-neutral-200 px-4 py-6 text-center transition-colors hover:border-brand-300 hover:bg-brand-50"
             >
-              <span className="text-sm font-semibold text-brand-900">{partner.name}</span>
-              <span className="mt-1 text-xs text-neutral-500">{partner.role}</span>
+              {partner.logoUrl ? (
+                <Image
+                  src={partner.logoUrl}
+                  alt={partner.name}
+                  width={140}
+                  height={40}
+                  className="h-9 w-auto object-contain grayscale transition-[filter] group-hover:grayscale-0"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-brand-900">{partner.name}</span>
+              )}
+              <span className="text-xs text-neutral-500">{partner.role}</span>
             </Link>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Card } from "@/components/ui/Card"
 import { partners } from "@/lib/data/partenaires"
@@ -21,6 +22,15 @@ export default function PartenairesPage() {
         <div className="container-site grid gap-6 sm:grid-cols-2">
           {partners.map((partner) => (
             <Card key={partner.id} className="flex flex-col">
+              {partner.logoUrl && (
+                <Image
+                  src={partner.logoUrl}
+                  alt={partner.name}
+                  width={160}
+                  height={48}
+                  className="mb-4 h-10 w-auto object-contain object-left"
+                />
+              )}
               <p className="text-xs font-semibold uppercase tracking-wide text-energy-600">{partner.role}</p>
               <h2 className="mt-2 text-lg font-semibold text-brand-950">{partner.name}</h2>
               <p className="mt-3 flex-1 text-sm leading-relaxed text-neutral-600">{partner.description}</p>

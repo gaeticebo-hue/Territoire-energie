@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
 
 export function Hero() {
   return (
@@ -14,8 +13,7 @@ export function Hero() {
       />
       <div className="container-site relative py-24 sm:py-32">
         <div className="max-w-3xl">
-          <Badge tone="energy">Programme Pays Basque · Nouvelle-Aquitaine</Badge>
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
             Sécurisez votre électricité renouvelable, ensemble.
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-neutral-300">
