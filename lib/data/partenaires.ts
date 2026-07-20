@@ -11,6 +11,7 @@ export const partners: Partner[] = [
     contactName: "Gaëtan Collin, Président",
     contactEmail: "gaetan.collin@greenbirdie.fr",
     city: "Paris",
+    logoUrl: "/logos/greenbirdie.png",
   },
   {
     id: "club-eti-na",
@@ -22,6 +23,7 @@ export const partners: Partner[] = [
     contactName: "Grégoire Le Taillandier, Délégué Général",
     contactEmail: "gregoire.letaillandier@clubeti-na.fr",
     city: "Saint-Jean-d'Illac",
+    logoUrl: "/logos/club-eti-na.png",
   },
   {
     id: "pays-basque-industries",
@@ -33,6 +35,7 @@ export const partners: Partner[] = [
     contactName: "Thibaut Hourquebie, Délégué Général",
     contactEmail: "t.hourquebie@paysbasque-industries.com",
     city: "Bayonne",
+    logoUrl: "/logos/pays-basque-industries.png",
   },
   {
     id: "mutandis-avocat",
@@ -44,5 +47,6 @@ export const partners: Partner[] = [
     contactName: "Me Benoit Denis",
     contactEmail: "b.denis@mutandis-avocat.fr",
     city: "Paris",
+    logoUrl: "/logos/mutandis-avocat.png",
   },
 ]

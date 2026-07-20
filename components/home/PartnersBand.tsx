@@ -17,13 +17,15 @@ export function PartnersBand() {
               className="group flex flex-col items-center justify-center gap-2 rounded-lg border border-neutral-200 px-4 py-6 text-center transition-colors hover:border-brand-300 hover:bg-brand-50"
             >
               {partner.logoUrl ? (
-                <Image
-                  src={partner.logoUrl}
-                  alt={partner.name}
-                  width={140}
-                  height={40}
-                  className="h-9 w-auto object-contain grayscale transition-[filter] group-hover:grayscale-0"
-                />
+                <span className="relative h-9 w-full">
+                  <Image
+                    src={partner.logoUrl}
+                    alt={partner.name}
+                    fill
+                    sizes="140px"
+                    className="object-contain grayscale transition-[filter] group-hover:grayscale-0"
+                  />
+                </span>
               ) : (
                 <span className="text-sm font-semibold text-brand-900">{partner.name}</span>
               )}

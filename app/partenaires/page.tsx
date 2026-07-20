@@ -23,13 +23,15 @@ export default function PartenairesPage() {
           {partners.map((partner) => (
             <Card key={partner.id} className="flex flex-col">
               {partner.logoUrl && (
-                <Image
-                  src={partner.logoUrl}
-                  alt={partner.name}
-                  width={160}
-                  height={48}
-                  className="mb-4 h-10 w-auto object-contain object-left"
-                />
+                <span className="relative mb-4 block h-10 w-40">
+                  <Image
+                    src={partner.logoUrl}
+                    alt={partner.name}
+                    fill
+                    sizes="160px"
+                    className="object-contain object-left"
+                  />
+                </span>
               )}
               <p className="text-xs font-semibold uppercase tracking-wide text-energy-600">{partner.role}</p>
               <h2 className="mt-2 text-lg font-semibold text-brand-950">{partner.name}</h2>
