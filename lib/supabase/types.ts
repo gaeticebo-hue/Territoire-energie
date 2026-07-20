@@ -2,6 +2,11 @@
 // À remplacer par `npx supabase gen types typescript` une fois la CLI
 // Supabase configurée avec le projet, pour rester synchronisé avec le
 // schéma réel.
+//
+// La forme exacte (Row/Insert/Update/Relationships pour chaque table, et
+// Tables/Views/Functions au niveau du schéma) est requise par
+// @supabase/postgrest-js pour que l'inférence de types fonctionne : sans
+// elle, `.from(...)` retombe silencieusement sur `never`.
 
 export type Database = {
   public: {
@@ -16,8 +21,17 @@ export type Database = {
           region: string | null
           created_at: string
         }
-        Insert: Partial<Database["public"]["Tables"]["companies"]["Row"]> & { name: string; type: string }
-        Update: Partial<Database["public"]["Tables"]["companies"]["Row"]>
+        Insert: {
+          id?: string
+          name: string
+          type: string
+          sector?: string | null
+          annual_consumption_mwh?: number | null
+          region?: string | null
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["companies"]["Insert"]>
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -28,8 +42,16 @@ export type Database = {
           role: "admin" | "member" | "partner" | "producer"
           created_at: string
         }
-        Insert: Partial<Database["public"]["Tables"]["profiles"]["Row"]> & { id: string; email: string }
-        Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>
+        Insert: {
+          id: string
+          email: string
+          full_name?: string | null
+          company_id?: string | null
+          role?: string
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>
+        Relationships: []
       }
       memberships: {
         Row: {
@@ -37,8 +59,13 @@ export type Database = {
           programme_id: string
           created_at: string
         }
-        Insert: { company_id: string; programme_id: string }
-        Update: Partial<Database["public"]["Tables"]["memberships"]["Row"]>
+        Insert: {
+          company_id: string
+          programme_id: string
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["memberships"]["Insert"]>
+        Relationships: []
       }
       documents: {
         Row: {
@@ -52,12 +79,19 @@ export type Database = {
           updated_at: string | null
           created_at: string
         }
-        Insert: Partial<Database["public"]["Tables"]["documents"]["Row"]> & {
+        Insert: {
+          id?: string
           title: string
+          programme_id?: string | null
           visibility: string
           category: string
+          file_url?: string
+          description?: string | null
+          updated_at?: string | null
+          created_at?: string
         }
-        Update: Partial<Database["public"]["Tables"]["documents"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["documents"]["Insert"]>
+        Relationships: []
       }
       faq_items: {
         Row: {
@@ -70,13 +104,18 @@ export type Database = {
           sort_order: number
           created_at: string
         }
-        Insert: Partial<Database["public"]["Tables"]["faq_items"]["Row"]> & {
+        Insert: {
+          id?: string
           category: string
           question: string
           answer: string
+          programme_id?: string | null
           visibility: string
+          sort_order?: number
+          created_at?: string
         }
-        Update: Partial<Database["public"]["Tables"]["faq_items"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["faq_items"]["Insert"]>
+        Relationships: []
       }
       applications: {
         Row: {
@@ -94,14 +133,26 @@ export type Database = {
           status: "new" | "in_review" | "shortlisted" | "accepted" | "rejected"
           submitted_at: string
         }
-        Insert: Partial<Database["public"]["Tables"]["applications"]["Row"]> & {
+        Insert: {
+          id?: string
           type: string
+          programme_id?: string | null
           company_name: string
           contact_name: string
           email: string
+          phone?: string | null
+          sector?: string | null
+          annual_consumption_mwh?: number | null
+          technology?: string | null
+          message?: string | null
+          status?: string
+          submitted_at?: string
         }
-        Update: Partial<Database["public"]["Tables"]["applications"]["Row"]>
+        Update: Partial<Database["public"]["Tables"]["applications"]["Insert"]>
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
   }
 }
