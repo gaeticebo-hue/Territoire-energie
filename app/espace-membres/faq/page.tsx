@@ -1,15 +1,17 @@
 import { FaqAccordion } from "@/components/faq/FaqAccordion"
-import { getDemoSession } from "@/lib/auth/session"
+import { getSession } from "@/lib/auth/session"
 import { getProgrammeIdsForCompany } from "@/lib/data/adhesions"
-import { faqItems } from "@/lib/data/faq"
+import { getPrivateFaqItemsByProgramme } from "@/lib/data/faq"
 
-export default function EspaceMembresFaqPage() {
-  const { company } = getDemoSession()
-  const programmeIds = company ? getProgrammeIdsForCompany(company.id) : []
+export default async function EspaceMembresFaqPage() {
+  const session = await getSession()
+  if (!session) return null
 
-  const privateFaq = faqItems.filter(
-    (f) => f.visibility === "private" && f.programmeId && programmeIds.includes(f.programmeId),
-  )
+  const { company } = session
+  const programmeIds = company ? await getProgrammeIdsForCompany(company.id) : []
+
+  const faqByProgramme = await Promise.all(programmeIds.map((id) => getPrivateFaqItemsByProgramme(id)))
+  const privateFaq = faqByProgramme.flat()
 
   return (
     <div className="container-site py-10">

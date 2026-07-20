@@ -1,24 +1,56 @@
-import { demoUser } from "@/lib/data/utilisateurs"
-import { getCompanyById } from "@/lib/data/entreprises"
-import type { UserProfile, Company } from "@/lib/types"
-
-// ATTENTION : ceci n'est PAS un mécanisme d'authentification. L'espace
-// membres est actuellement une démonstration de l'interface, non protégée
-// par une vérification d'identité réelle. Elle renvoie systématiquement le
-// même profil de démonstration.
-//
-// Avant mise en production, remplacer cette fonction par une lecture de
-// session Supabase (voir lib/supabase/client.ts) côté serveur, et rediriger
-// vers /espace-membres/connexion si aucune session valide n'est trouvée.
+import { createClient } from "@/lib/supabase/server"
+import type { Company, UserProfile } from "@/lib/types"
 
 export type Session = {
   user: UserProfile
   company: Company | undefined
 }
 
-export function getDemoSession(): Session {
-  return {
-    user: demoUser,
-    company: getCompanyById(demoUser.companyId),
+// Lecture de la session réelle (Supabase Auth) côté serveur. Retourne null
+// si personne n'est connecté — le middleware (voir middleware.ts) redirige
+// déjà vers /espace-membres/connexion dans ce cas, cette fonction ne
+// devrait donc renvoyer null que dans des cas limites (session expirée
+// entre le middleware et le rendu de la page, par exemple).
+export async function getSession(): Promise<Session | null> {
+  const supabase = await createClient()
+
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
+
+  if (!authUser) return null
+
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", authUser.id).single()
+
+  if (!profile) return null
+
+  const user: UserProfile = {
+    id: profile.id,
+    email: profile.email,
+    fullName: profile.full_name ?? profile.email,
+    companyId: profile.company_id ?? "",
+    role: profile.role,
   }
+
+  let company: Company | undefined
+  if (profile.company_id) {
+    const { data: companyRow } = await supabase
+      .from("companies")
+      .select("*")
+      .eq("id", profile.company_id)
+      .single()
+
+    if (companyRow) {
+      company = {
+        id: companyRow.id,
+        name: companyRow.name,
+        type: companyRow.type,
+        sector: companyRow.sector ?? undefined,
+        annualConsumptionMWh: companyRow.annual_consumption_mwh ?? undefined,
+        region: companyRow.region ?? undefined,
+      }
+    }
+  }
+
+  return { user, company }
 }

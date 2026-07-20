@@ -19,12 +19,13 @@ Nouvelle-Aquitaine, Pays Basque Industries, Mutandis Avocat (juridique).
 
 - Next.js (App Router) + TypeScript + Tailwind CSS v4 (thème défini en CSS
   dans `app/globals.css` via `@theme`, pas de `tailwind.config.js`).
-- Pas de base de données : les données sont statiques, dans `lib/data/*.ts`,
-  typées par `lib/types.ts`.
-- Pas d'authentification réelle : l'espace membres (`app/espace-membres/*`)
-  est une démonstration d'interface (voir `lib/auth/session.ts`), clairement
-  annoncée comme telle via `components/members/DemoBanner.tsx`. Ne jamais
-  faire croire à une protection d'accès qui n'existe pas.
+- Supabase (Postgres + Auth) pour l'espace membres et les données
+  privées/candidatures — voir `lib/supabase/*` et
+  `supabase/migrations/0001_init.sql`. Le contenu éditorial public
+  (programmes, calendrier, partenaires) reste statique dans `lib/data/*.ts`.
+- Authentification réelle par magic link (Supabase Auth, sans mot de passe) :
+  `app/espace-membres/connexion/page.tsx` + `app/auth/callback/route.ts` +
+  `middleware.ts` (protection des routes `/espace-membres/*`).
 
 ## Architecture
 
@@ -32,9 +33,10 @@ Nouvelle-Aquitaine, Pays Basque Industries, Mutandis Avocat (juridique).
 app/                        Pages (App Router)
   (pages publiques au niveau racine : le-programme, programmes, candidater,
   producteurs, faq, ressources, partenaires, contact)
-  api/candidatures/route.ts Validation + accusé de réception (pas de persistance)
-  api/contact/route.ts      Idem, pour le formulaire de contact
-  espace-membres/           Zone privée (démo), layout dédié avec bandeau + sous-nav
+  api/candidatures/route.ts Valide puis insère dans la table `applications`
+  api/contact/route.ts      Idem, pour le formulaire de contact (pas de persistance)
+  auth/callback/route.ts    Échange le code du magic link contre une session
+  espace-membres/           Zone privée réelle, protégée par middleware.ts
 components/
   layout/                   Header, Footer, Logo, PageHeader
   ui/                       Button, Badge, Card, SectionHeading, Field (primitives)
@@ -43,27 +45,34 @@ components/
   faq/                      FaqAccordion, FaqExplorer
   forms/                    Formulaires client (candidature, contact)
   documents/                DocumentCard
-  members/                  DemoBanner, MemberNav, ProgrammeProgress
+  members/                  MemberNav (avec déconnexion), ProgrammeProgress
 lib/
   types.ts                  Modèle de données (Programme, Company, UserProfile,
                              Document, FaqItem, CalendarStep, Application, Partner)
-  data/                     Données statiques, une source de vérité par entité
-  auth/session.ts           Session de démonstration (PAS un vrai mécanisme d'auth)
-  supabase/client.ts        Point d'entrée réservé à la future intégration Supabase
+  data/                     programmes/calendrier/partenaires statiques ;
+                             documents/faq/adhesions interrogent Supabase (async)
+  auth/session.ts           Lecture de la session Supabase réelle (server-side)
+  supabase/client.ts        Client navigateur (createBrowserClient)
+  supabase/server.ts        Client serveur (Server Components / Route Handlers)
+  supabase/types.ts         Typage Database à la main (à régénérer via
+                             `supabase gen types typescript` si la CLI est configurée)
+middleware.ts                Rafraîchit la session et protège /espace-membres/*
+supabase/migrations/0001_init.sql  Schéma, RLS, seed — à exécuter dans le SQL Editor Supabase
 ```
 
 ## Modèle de données
 
 Le modèle de données (types `Programme`, `Company`, `UserProfile`,
-`Document`) doit rester conforme à celui fourni initialement. Toute relation
-supplémentaire (ex. l'appartenance d'une entreprise à un ou plusieurs
-programmes) se modélise comme une relation séparée (voir
-`lib/data/adhesions.ts`), pas comme un champ ajouté sur les types existants,
-sauf besoin explicite.
+`Document`) doit rester conforme à celui fourni initialement. La relation
+entreprise ↔ programmes vit dans la table `memberships` (Supabase), pas comme
+un champ ajouté sur les types existants.
 
-Quand la persistance réelle sera branchée (Supabase), les tables doivent
-suivre `lib/types.ts` et appliquer du Row Level Security pour restreindre les
-documents et données privées selon le rôle et l'entreprise de l'utilisateur.
+Row Level Security (voir `supabase/migrations/0001_init.sql`) restreint déjà
+`documents` et `faq_items` privés aux membres de l'entreprise concernée (via
+`memberships`), et `applications` en lecture aux seuls admins. Toute nouvelle
+table privée doit suivre le même principe : policy `select` conditionnée par
+`auth.uid()` via `profiles`/`memberships`, jamais de filtrage uniquement côté
+client.
 
 ## Contenu et confidentialité — règle importante
 
@@ -73,9 +82,9 @@ confidentialité de 2 à 5 ans selon les documents). En conséquence :
 
 - Ne jamais copier ces fichiers PDF/DOCX réels dans `public/` ou tout
   emplacement servi publiquement par le site.
-- Les entrées `Document` correspondantes restent `visibility: "private"` avec
-  `fileUrl: "#"` (placeholder) tant qu'aucun stockage sécurisé (Supabase
-  Storage + RLS) n'est branché.
+- Les entrées `documents` correspondantes restent `visibility: 'private'`
+  avec `file_url: '#'` (placeholder) tant qu'aucun stockage sécurisé
+  (Supabase Storage + RLS sur le bucket) n'est branché.
 - Sur les pages publiques (Ressources, Producteurs), présenter ces documents
   comme transmis sur demande / après qualification, pas en téléchargement
   direct.
@@ -100,28 +109,34 @@ Palette définie dans `app/globals.css` (`@theme`) :
 - `neutral-*` : gris clair pour le texte secondaire et les fonds
 
 Pas de photographies/stock — le design s'appuie sur la typographie, des
-formes géométriques simples (SVG inline) et la couleur. Rester sobre,
+formes géométriques simples (SVG inline), la couleur, et les logos des
+partenaires (`public/logos/`, voir `Partner.logoUrl`). Rester sobre,
 institutionnel, accessible (contraste AA, focus visibles) et responsive
 mobile-first.
 
 ## Ce qui est volontairement hors périmètre
 
 - Pas de logique de paiement.
-- Pas de CRM (les candidatures sont validées et acquittées via
-  `app/api/candidatures/route.ts`, sans persistance ni pipeline de suivi).
-- Pas d'authentification réelle tant que Supabase n'est pas branché.
+- Pas de CRM/pipeline de suivi des candidatures au-delà de la table
+  `applications` (statut `new` par défaut) — un tri/traitement manuel via le
+  SQL Editor ou une interface admin future reste à faire, non anticipé ici.
+- Pas d'interface d'administration pour gérer les rôles/rattachements
+  d'entreprise : cela se fait par requête SQL directe (voir commentaires en
+  fin de `supabase/migrations/0001_init.sql`).
 
 Avant d'ajouter l'un de ces éléments, vérifier que c'est bien demandé
 explicitement plutôt que de l'anticiper.
 
-## Prochaines étapes (Supabase)
+## Supabase — état et opérations courantes
 
-1. `npm install @supabase/supabase-js @supabase/ssr`
-2. Renseigner `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   (voir `.env.example`)
-3. Remplacer `lib/supabase/client.ts` par un vrai client (browser + serveur)
-4. Remplacer `lib/auth/session.ts` par une lecture de session réelle, avec
-   redirection vers `/espace-membres/connexion` si absente
-5. Créer les tables selon `lib/types.ts`, avec RLS
-6. Brancher `app/api/candidatures/route.ts` et `app/api/contact/route.ts` sur
-   la persistance réelle (insertion + notification e-mail à l'AMO)
+- Variables d'environnement dans `.env.local` (non commité) : voir
+  `.env.example`. Seules `NEXT_PUBLIC_SUPABASE_URL` et
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` sont utilisées côté code — jamais la clé
+  `service_role` ni le mot de passe de la base dans le dépôt ou le code.
+- Migration à appliquer manuellement (SQL Editor du dashboard Supabase,
+  copier-coller de `supabase/migrations/0001_init.sql`) : ce projet n'utilise
+  pas encore la CLI Supabase pour les migrations automatisées.
+- Nouvel utilisateur : la première connexion (magic link) crée
+  automatiquement une ligne `profiles` (rôle `member`, sans entreprise) via
+  le trigger `handle_new_user`. Le rattachement à une entreprise et le rôle
+  `admin` se font par `UPDATE public.profiles ...` (voir fin de la migration).

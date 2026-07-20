@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: "Documents et supports publics du programme Territoire Avenir Énergie.",
 }
 
-export default function RessourcesPage() {
-  const publicDocuments = getPublicDocuments()
+export default async function RessourcesPage() {
+  const publicDocuments = await getPublicDocuments()
 
   return (
     <>

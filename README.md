@@ -10,17 +10,30 @@ Pays Basque Industries et Mutandis Avocat.
 
 ## Lancer le site en local
 
-Prérequis : Node.js 20+.
+Prérequis : Node.js 20+, un projet Supabase.
 
 ```bash
 npm install
+```
+
+Créez `.env.local` (voir `.env.example`) avec l'URL et la clé `anon public`
+de votre projet Supabase (Dashboard → Settings → API) :
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```
+
+Exécutez `supabase/migrations/0001_init.sql` dans le SQL Editor du dashboard
+Supabase (schéma, RLS, données de démonstration) — voir les instructions en
+fin de fichier pour vous attribuer un rôle admin après votre première
+connexion.
+
+```bash
 npm run dev
 ```
 
 Ouvrir [http://localhost:3000](http://localhost:3000).
-
-Aucune variable d'environnement n'est requise pour le moment (voir
-`.env.example` — réservé à la future intégration Supabase).
 
 ## Scripts
 
@@ -38,16 +51,19 @@ Aucune variable d'environnement n'est requise pour le moment (voir
   page producteurs ENR (appel d'offres), FAQ pédagogique, ressources,
   partenaires, contact.
 - **Espace membres** (`/espace-membres`) : tableau de bord, documents
-  réservés, calendrier du programme, FAQ privée. **Il s'agit actuellement
-  d'une démonstration d'interface, sans authentification réelle** — voir
-  le bandeau affiché sur ces pages et `lib/auth/session.ts`.
+  réservés, calendrier du programme, FAQ privée. Protégé par une vraie
+  authentification Supabase (magic link par e-mail, sans mot de passe) — voir
+  `middleware.ts`, `app/espace-membres/connexion/page.tsx` et
+  `app/auth/callback/route.ts`.
 - **Modèle de données** (`lib/types.ts`) : `Programme`, `Company`,
   `UserProfile`, `Document`, `FaqItem`, `CalendarStep`, `Application`,
-  `Partner`. Données statiques dans `lib/data/`.
-- **Formulaires** : candidature entreprise, manifestation d'intérêt
-  producteur, contact. Ils appellent des routes API (`app/api/*`) qui
-  valident et acquittent la requête, sans persistance ni CRM — voir
-  `CLAUDE.md` pour le raccordement futur à Supabase.
+  `Partner`. Programmes/calendrier/partenaires restent statiques
+  (`lib/data/`) ; comptes, entreprises, adhésions, documents/FAQ privés et
+  candidatures vivent dans Supabase (`supabase/migrations/0001_init.sql`).
+- **Formulaires** : candidature entreprise et manifestation d'intérêt
+  producteur sont enregistrées dans la table `applications` (Supabase). Le
+  formulaire de contact reste un simple accusé de réception, sans
+  persistance.
 
 ## Documents confidentiels de l'appel d'offres
 
@@ -58,11 +74,6 @@ sont soumis à une obligation de confidentialité contractuelle. Ils ne sont
 contact, conformément au processus réel de l'appel d'offres. Voir la section
 correspondante de `CLAUDE.md` avant d'ajouter des documents dans `public/`.
 
-## Prochaines étapes techniques
-
-Voir `CLAUDE.md` (section « Prochaines étapes ») pour le raccordement à
-Supabase : authentification, documents privés réels, gestion des rôles.
-
 ## Stack
 
-Next.js (App Router) · TypeScript · Tailwind CSS v4
+Next.js (App Router) · TypeScript · Tailwind CSS v4 · Supabase (Auth + Postgres + RLS)

@@ -1,14 +1,6 @@
 import { NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/server"
 import type { ApplicantType } from "@/lib/types"
-
-// Point d'entrée provisoire pour les candidatures (entreprises et
-// producteurs). Aucune donnée n'est persistée à ce stade : la requête est
-// validée puis acquittée, ce qui documente le contrat d'API attendu par le
-// front-end sans introduire de logique CRM.
-//
-// Brancher une persistance réelle (table `applications` Supabase, envoi
-// d'e-mail de notification à l'AMO, etc.) reviendra à remplacer le corps de
-// cette fonction, sans changer les formulaires qui l'appellent.
 
 type ApplicationPayload = {
   type: ApplicantType
@@ -52,7 +44,24 @@ export async function POST(request: Request) {
     )
   }
 
-  // TODO (Supabase) : insérer dans la table `applications` et notifier l'AMO.
+  const supabase = await createClient()
+  const { error } = await supabase.from("applications").insert({
+    type: body.type,
+    programme_id: body.programmeId,
+    company_name: body.companyName,
+    contact_name: body.contactName,
+    email: body.email,
+    phone: body.phone,
+    sector: body.sector,
+    annual_consumption_mwh: body.annualConsumptionMWh,
+    technology: body.technology,
+    message: body.message,
+  })
+
+  if (error) {
+    return NextResponse.json({ error: "Impossible d'enregistrer la candidature pour le moment." }, { status: 500 })
+  }
+
   return NextResponse.json({
     ok: true,
     message: "Candidature enregistrée. Vous serez recontacté par l'équipe de coordination du programme.",

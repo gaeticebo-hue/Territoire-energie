@@ -1,12 +1,15 @@
 import { ProgrammeTimeline } from "@/components/programmes/ProgrammeTimeline"
-import { getDemoSession } from "@/lib/auth/session"
+import { getSession } from "@/lib/auth/session"
 import { getProgrammeIdsForCompany } from "@/lib/data/adhesions"
 import { programmes } from "@/lib/data/programmes"
 import { getCalendarStepsByProgramme } from "@/lib/data/calendrier"
 
-export default function EspaceMembresCalendrierPage() {
-  const { company } = getDemoSession()
-  const programmeIds = company ? getProgrammeIdsForCompany(company.id) : []
+export default async function EspaceMembresCalendrierPage() {
+  const session = await getSession()
+  if (!session) return null
+
+  const { company } = session
+  const programmeIds = company ? await getProgrammeIdsForCompany(company.id) : []
   const myProgrammes = programmes.filter((p) => programmeIds.includes(p.id))
 
   return (

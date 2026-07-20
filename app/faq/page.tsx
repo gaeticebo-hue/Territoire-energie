@@ -1,16 +1,16 @@
 import type { Metadata } from "next"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { FaqExplorer } from "@/components/faq/FaqExplorer"
-import { faqItems } from "@/lib/data/faq"
+import { getPublicFaqItems } from "@/lib/data/faq"
 
 export const metadata: Metadata = {
   title: "FAQ",
   description: "Questions fréquentes sur l'achat groupé d'électricité, le PPA multi-acheteurs et le programme Territoire Avenir Énergie.",
 }
 
-const publicFaq = faqItems.filter((f) => f.visibility === "public")
+export default async function FaqPage() {
+  const publicFaq = await getPublicFaqItems()
 
-export default function FaqPage() {
   return (
     <>
       <PageHeader

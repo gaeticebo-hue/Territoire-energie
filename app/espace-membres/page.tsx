@@ -2,16 +2,19 @@ import Link from "next/link"
 import { Card } from "@/components/ui/Card"
 import { StatusBadge } from "@/components/programmes/StatusBadge"
 import { ProgrammeProgress } from "@/components/members/ProgrammeProgress"
-import { getDemoSession } from "@/lib/auth/session"
+import { getSession } from "@/lib/auth/session"
 import { getProgrammeIdsForCompany } from "@/lib/data/adhesions"
 import { programmes } from "@/lib/data/programmes"
 import { getCalendarStepsByProgramme } from "@/lib/data/calendrier"
 import { getPrivateDocumentsByProgramme } from "@/lib/data/documents"
-import { faqItems } from "@/lib/data/faq"
+import { getPrivateFaqItemsByProgramme } from "@/lib/data/faq"
 
-export default function EspaceMembresDashboard() {
-  const { user, company } = getDemoSession()
-  const programmeIds = company ? getProgrammeIdsForCompany(company.id) : []
+export default async function EspaceMembresDashboard() {
+  const session = await getSession()
+  if (!session) return null // le middleware redirige déjà vers /espace-membres/connexion
+
+  const { user, company } = session
+  const programmeIds = company ? await getProgrammeIdsForCompany(company.id) : []
   const myProgrammes = programmes.filter((p) => programmeIds.includes(p.id))
 
   return (
@@ -23,47 +26,61 @@ export default function EspaceMembresDashboard() {
         </h1>
       </div>
 
+      {!company && (
+        <Card className="mt-8 bg-amber-50">
+          <p className="text-sm leading-relaxed text-amber-900">
+            Votre compte n&apos;est pas encore rattaché à une entreprise membre. L&apos;équipe de
+            coordination du programme doit valider votre rattachement — contactez GREENBIRDIE si cela
+            prend plus de quelques jours.
+          </p>
+        </Card>
+      )}
+
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {myProgrammes.map((programme) => {
-          const steps = getCalendarStepsByProgramme(programme.id)
-          const privateDocs = getPrivateDocumentsByProgramme(programme.id)
-          const privateFaq = faqItems.filter((f) => f.visibility === "private" && f.programmeId === programme.id)
+        {await Promise.all(
+          myProgrammes.map(async (programme) => {
+            const [steps, privateDocs, privateFaq] = await Promise.all([
+              Promise.resolve(getCalendarStepsByProgramme(programme.id)),
+              getPrivateDocumentsByProgramme(programme.id),
+              getPrivateFaqItemsByProgramme(programme.id),
+            ])
 
-          return (
-            <Card key={programme.id} className="lg:col-span-2">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                    Édition {programme.edition}
-                  </p>
-                  <h2 className="mt-1 text-lg font-semibold text-brand-950">
-                    {programme.title} #{programme.edition}
-                  </h2>
+            return (
+              <Card key={programme.id} className="lg:col-span-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                      Édition {programme.edition}
+                    </p>
+                    <h2 className="mt-1 text-lg font-semibold text-brand-950">
+                      {programme.title} #{programme.edition}
+                    </h2>
+                  </div>
+                  <StatusBadge status={programme.status} />
                 </div>
-                <StatusBadge status={programme.status} />
-              </div>
 
-              <div className="mt-6">
-                <ProgrammeProgress steps={steps} />
-              </div>
+                <div className="mt-6">
+                  <ProgrammeProgress steps={steps} />
+                </div>
 
-              <div className="mt-6 grid grid-cols-3 gap-4 border-t border-neutral-100 pt-5 text-sm">
-                <Link href="/espace-membres/documents" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                  <span className="block text-lg font-semibold text-brand-900">{privateDocs.length}</span>
-                  <span className="text-xs text-neutral-500">Documents</span>
-                </Link>
-                <Link href="/espace-membres/calendrier" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                  <span className="block text-lg font-semibold text-brand-900">{steps.length}</span>
-                  <span className="text-xs text-neutral-500">Étapes calendrier</span>
-                </Link>
-                <Link href="/espace-membres/faq" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                  <span className="block text-lg font-semibold text-brand-900">{privateFaq.length}</span>
-                  <span className="text-xs text-neutral-500">Questions privées</span>
-                </Link>
-              </div>
-            </Card>
-          )
-        })}
+                <div className="mt-6 grid grid-cols-3 gap-4 border-t border-neutral-100 pt-5 text-sm">
+                  <Link href="/espace-membres/documents" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
+                    <span className="block text-lg font-semibold text-brand-900">{privateDocs.length}</span>
+                    <span className="text-xs text-neutral-500">Documents</span>
+                  </Link>
+                  <Link href="/espace-membres/calendrier" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
+                    <span className="block text-lg font-semibold text-brand-900">{steps.length}</span>
+                    <span className="text-xs text-neutral-500">Étapes calendrier</span>
+                  </Link>
+                  <Link href="/espace-membres/faq" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
+                    <span className="block text-lg font-semibold text-brand-900">{privateFaq.length}</span>
+                    <span className="text-xs text-neutral-500">Questions privées</span>
+                  </Link>
+                </div>
+              </Card>
+            )
+          }),
+        )}
 
         <Card className="bg-brand-50">
           <h2 className="text-base font-semibold text-brand-950">Votre profil</h2>
@@ -100,10 +117,10 @@ export default function EspaceMembresDashboard() {
         </Card>
       </div>
 
-      {myProgrammes.length === 0 && (
+      {company && myProgrammes.length === 0 && (
         <Card className="mt-8">
           <p className="text-sm text-neutral-600">
-            Aucun programme associé à ce profil de démonstration pour le moment.
+            Votre entreprise n&apos;est pour l&apos;instant rattachée à aucune édition du programme.
           </p>
         </Card>
       )}
