@@ -24,8 +24,7 @@ const columns = [
     title: "Espace membres",
     links: [
       { href: "/espace-membres", label: "Tableau de bord" },
-      { href: "/espace-membres/documents", label: "Documents réservés" },
-      { href: "/espace-membres/calendrier", label: "Calendrier du programme" },
+      { href: "/espace-membres/connexion", label: "Connexion" },
     ],
   },
 ]

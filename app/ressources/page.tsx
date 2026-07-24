@@ -36,7 +36,7 @@ export default async function RessourcesPage() {
               <p className="mt-2 text-sm leading-relaxed text-neutral-600">
                 Le règlement de consultation, le Term Sheet et les comptes rendus du programme sont
                 accessibles aux entreprises membres depuis l&apos;
-                <a href="/espace-membres/documents" className="font-medium text-brand-700 underline underline-offset-2">
+                <a href="/espace-membres" className="font-medium text-brand-700 underline underline-offset-2">
                   espace membres
                 </a>
                 , ou transmis aux producteurs candidats sur demande depuis la page{" "}

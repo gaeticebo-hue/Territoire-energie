@@ -1,13 +1,9 @@
 import Link from "next/link"
 import { Card } from "@/components/ui/Card"
 import { StatusBadge } from "@/components/programmes/StatusBadge"
-import { ProgrammeProgress } from "@/components/members/ProgrammeProgress"
 import { getSession } from "@/lib/auth/session"
 import { getProgrammeIdsForCompany } from "@/lib/data/adhesions"
 import { programmes } from "@/lib/data/programmes"
-import { getCalendarStepsByProgramme } from "@/lib/data/calendrier"
-import { getPrivateDocumentsByProgramme } from "@/lib/data/documents"
-import { getPrivateFaqItemsByProgramme } from "@/lib/data/faq"
 
 export default async function EspaceMembresDashboard() {
   const session = await getSession()
@@ -37,50 +33,42 @@ export default async function EspaceMembresDashboard() {
       )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {await Promise.all(
-          myProgrammes.map(async (programme) => {
-            const [steps, privateDocs, privateFaq] = await Promise.all([
-              Promise.resolve(getCalendarStepsByProgramme(programme.id)),
-              getPrivateDocumentsByProgramme(programme.id),
-              getPrivateFaqItemsByProgramme(programme.id),
-            ])
+        <div className="space-y-4 lg:col-span-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+            Vos programmes
+          </h2>
 
-            return (
-              <Card key={programme.id} className="lg:col-span-2">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                      Édition {programme.edition}
-                    </p>
-                    <h2 className="mt-1 text-lg font-semibold text-brand-950">
-                      {programme.title} #{programme.edition}
-                    </h2>
-                  </div>
-                  <StatusBadge status={programme.status} />
-                </div>
+          {myProgrammes.map((programme) => (
+            <Link
+              key={programme.id}
+              href={`/espace-membres/programmes/${programme.slug}`}
+              className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 bg-white p-6 transition-shadow hover:shadow-md"
+            >
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  Édition {programme.edition}
+                </p>
+                <h3 className="mt-1 text-lg font-semibold text-brand-950">
+                  {programme.title} #{programme.edition}
+                </h3>
+              </div>
+              <div className="flex items-center gap-3">
+                <StatusBadge status={programme.status} />
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-neutral-400">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </Link>
+          ))}
 
-                <div className="mt-6">
-                  <ProgrammeProgress steps={steps} />
-                </div>
-
-                <div className="mt-6 grid grid-cols-3 gap-4 border-t border-neutral-100 pt-5 text-sm">
-                  <Link href="/espace-membres/documents" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                    <span className="block text-lg font-semibold text-brand-900">{privateDocs.length}</span>
-                    <span className="text-xs text-neutral-500">Documents</span>
-                  </Link>
-                  <Link href="/espace-membres/calendrier" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                    <span className="block text-lg font-semibold text-brand-900">{steps.length}</span>
-                    <span className="text-xs text-neutral-500">Étapes calendrier</span>
-                  </Link>
-                  <Link href="/espace-membres/faq" className="rounded-lg border border-neutral-200 p-3 text-center hover:border-brand-300 hover:bg-brand-50">
-                    <span className="block text-lg font-semibold text-brand-900">{privateFaq.length}</span>
-                    <span className="text-xs text-neutral-500">Questions privées</span>
-                  </Link>
-                </div>
-              </Card>
-            )
-          }),
-        )}
+          {company && myProgrammes.length === 0 && (
+            <Card>
+              <p className="text-sm text-neutral-600">
+                Votre entreprise n&apos;est pour l&apos;instant rattachée à aucune édition du programme.
+              </p>
+            </Card>
+          )}
+        </div>
 
         <Card className="bg-brand-50">
           <h2 className="text-base font-semibold text-brand-950">Votre profil</h2>
@@ -116,14 +104,6 @@ export default async function EspaceMembresDashboard() {
           </dl>
         </Card>
       </div>
-
-      {company && myProgrammes.length === 0 && (
-        <Card className="mt-8">
-          <p className="text-sm text-neutral-600">
-            Votre entreprise n&apos;est pour l&apos;instant rattachée à aucune édition du programme.
-          </p>
-        </Card>
-      )}
     </div>
   )
 }
