@@ -49,4 +49,22 @@ export const partners: Partner[] = [
     city: "Paris",
     logoUrl: "/logos/mutandis-avocat.png",
   },
+  {
+    id: "region-nouvelle-aquitaine",
+    name: "Région Nouvelle-Aquitaine",
+    role: "Partenaire institutionnel (édition 1)",
+    description:
+      "La Région Nouvelle-Aquitaine a initié dès 2021, avec le Club des ETI de Nouvelle-Aquitaine, le dispositif d'accompagnement des ETI à la contractualisation de PPA à l'origine de la première édition du programme.",
+    website: "https://www.neo-terra.fr",
+    city: "Bordeaux",
+    showcase: false,
+  },
+  {
+    id: "llc-avocats",
+    name: "LLC Avocats",
+    role: "Conseil juridique (édition 1)",
+    description:
+      "LLC Avocats a assuré le conseil juridique et contractuel pour la structuration et la négociation du PPA multi-acheteurs de la première édition du programme.",
+    showcase: false,
+  },
 ]

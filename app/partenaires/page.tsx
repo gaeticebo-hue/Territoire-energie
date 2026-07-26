@@ -20,7 +20,7 @@ export default function PartenairesPage() {
 
       <section className="py-16 sm:py-20">
         <div className="container-site grid gap-6 sm:grid-cols-2">
-          {partners.map((partner) => (
+          {partners.filter((partner) => partner.showcase !== false).map((partner) => (
             <Card key={partner.id} className="flex flex-col">
               {partner.logoUrl && (
                 <span className="relative mb-4 block h-10 w-40">

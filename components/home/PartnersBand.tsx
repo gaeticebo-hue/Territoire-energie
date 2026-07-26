@@ -10,7 +10,7 @@ export function PartnersBand() {
           Un programme coordonné par
         </p>
         <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {partners.map((partner) => (
+          {partners.filter((partner) => partner.showcase !== false).map((partner) => (
             <Link
               key={partner.id}
               href="/partenaires"

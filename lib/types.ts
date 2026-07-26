@@ -122,4 +122,6 @@ export type Partner = {
   city?: string
   /** Chemin vers le logo dans /public (ex. "/logos/greenbirdie.svg"). Si absent, le nom du partenaire est affiché en texte. */
   logoUrl?: string
+  /** false pour un partenaire propre à une édition passée (ex. édition 1), à ne pas afficher sur la page Partenaires générale ni le bandeau d'accueil. */
+  showcase?: boolean
 }
