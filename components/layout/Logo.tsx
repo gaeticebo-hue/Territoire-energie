@@ -16,7 +16,7 @@ export function Logo({ className = "", variant = "dark" }: Props) {
           width={1696}
           height={836}
           priority
-          className="h-12 w-auto"
+          className="h-16 w-auto sm:h-20"
         />
       </Link>
     )
