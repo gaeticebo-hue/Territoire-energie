@@ -2,6 +2,28 @@ import type { Programme } from "@/lib/types"
 
 export const programmes: Programme[] = [
   {
+    id: "prog-1",
+    slug: "territoire-avenir-energie-1",
+    title: "Territoire Avenir Énergie",
+    edition: 1,
+    status: "completed",
+    description:
+      "Première édition du programme : neuf ETI industrielles de Nouvelle-Aquitaine ont signé avec le producteur VALECO le premier contrat PPA multi-acheteurs de ce type en France, à l'issue d'un appel à projets porté par la Région Nouvelle-Aquitaine et le Club des ETI de Nouvelle-Aquitaine.",
+    targetVolumeGWh: "25 GWh / an contractualisés",
+    expectedPpaSignature: "23 juin 2025",
+    geography: "Nouvelle-Aquitaine (centrale photovoltaïque à Durance, Lot-et-Garonne)",
+    sector: "9 ETI industrielles multi-sectorielles",
+    ppaDurationYears: 15,
+    priceModel: "Prix fixe sur 15 ans (pay-as-produced)",
+    amoPartnerIds: ["greenbirdie"],
+    highlights: [
+      "Premier contrat PPA multi-acheteurs signé avec des ETI en France, avec 9 entreprises signataires",
+      "Centrale photovoltaïque de 23,4 MWc (37 968 panneaux) à Durance, en Lot-et-Garonne, aujourd'hui en production",
+      "Volume contractualisé de 25 GWh par an, soit environ un quart de la consommation électrique totale des 9 signataires (107 GWh/an)",
+      "Contrat PPA de 15 ans avec VALECO, livraison démarrée en janvier 2026, garanti par la Garantie Électricité Renouvelable de Bpifrance",
+    ],
+  },
+  {
     id: "prog-2",
     slug: "territoire-avenir-energie-2",
     title: "Territoire Avenir Énergie",

@@ -40,7 +40,10 @@ export default async function ProgrammeDetailPage({ params }: Props) {
     programme.launchDate ? { label: "Lancement", value: programme.launchDate } : null,
     programme.offerDeadline ? { label: "Clôture des offres producteurs", value: programme.offerDeadline } : null,
     programme.expectedPpaSignature
-      ? { label: "Signature du PPA envisagée", value: programme.expectedPpaSignature }
+      ? {
+          label: programme.status === "completed" ? "Date de signature du PPA" : "Signature du PPA envisagée",
+          value: programme.expectedPpaSignature,
+        }
       : null,
     programme.ppaDurationYears ? { label: "Durée du PPA", value: `${programme.ppaDurationYears} ans` } : null,
     programme.priceModel ? { label: "Modèle de prix", value: programme.priceModel } : null,
@@ -110,21 +113,36 @@ export default async function ProgrammeDetailPage({ params }: Props) {
               </dl>
             </Card>
 
-            <Card className="bg-brand-50">
-              <h2 className="text-base font-semibold text-brand-950">Rejoindre cette édition</h2>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-                Entreprises consommatrices comme producteurs peuvent manifester leur intérêt pour cette
-                édition du programme.
-              </p>
-              <div className="mt-5 flex flex-col gap-2.5">
-                <Button href="/candidater" className="w-full">
-                  Candidater comme entreprise
-                </Button>
-                <Button href="/producteurs" variant="outline" className="w-full">
-                  Candidater comme producteur
-                </Button>
-              </div>
-            </Card>
+            {programme.status === "completed" ? (
+              <Card className="bg-brand-50">
+                <h2 className="text-base font-semibold text-brand-950">Édition conclue</h2>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                  Cette édition n&apos;est plus ouverte à candidature. Découvrez les éditions en cours ou à
+                  venir du programme.
+                </p>
+                <div className="mt-5">
+                  <Button href="/programmes" variant="outline" className="w-full">
+                    Voir les autres éditions
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <Card className="bg-brand-50">
+                <h2 className="text-base font-semibold text-brand-950">Rejoindre cette édition</h2>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                  Entreprises consommatrices comme producteurs peuvent manifester leur intérêt pour cette
+                  édition du programme.
+                </p>
+                <div className="mt-5 flex flex-col gap-2.5">
+                  <Button href="/candidater" className="w-full">
+                    Candidater comme entreprise
+                  </Button>
+                  <Button href="/producteurs" variant="outline" className="w-full">
+                    Candidater comme producteur
+                  </Button>
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </section>
