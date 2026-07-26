@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 
 type Props = {
@@ -6,8 +7,20 @@ type Props = {
 }
 
 export function Logo({ className = "", variant = "dark" }: Props) {
-  const titleColor = variant === "light" ? "text-white" : "text-brand-900"
-  const subtitleColor = variant === "light" ? "text-energy-300" : "text-energy-600"
+  if (variant === "dark") {
+    return (
+      <Link href="/" className={`flex items-center ${className}`}>
+        <Image
+          src="/logos/logoTAE.png"
+          alt="Territoire Avenir Énergie"
+          width={1696}
+          height={836}
+          priority
+          className="h-12 w-auto"
+        />
+      </Link>
+    )
+  }
 
   return (
     <Link href="/" className={`flex items-center gap-3 ${className}`}>
@@ -25,8 +38,8 @@ export function Logo({ className = "", variant = "dark" }: Props) {
         </svg>
       </span>
       <span className="leading-tight">
-        <span className={`block font-semibold tracking-tight ${titleColor}`}>Territoire Avenir</span>
-        <span className={`block text-sm font-medium ${subtitleColor}`}>Énergie</span>
+        <span className="block font-semibold tracking-tight text-white">Territoire Avenir</span>
+        <span className="block text-sm font-medium text-energy-300">Énergie</span>
       </span>
     </Link>
   )
