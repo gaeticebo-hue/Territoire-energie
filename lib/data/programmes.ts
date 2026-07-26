@@ -15,7 +15,7 @@ export const programmes: Programme[] = [
     sector: "9 ETI industrielles multi-sectorielles",
     ppaDurationYears: 15,
     priceModel: "Prix fixe sur 15 ans (pay-as-produced)",
-    amoPartnerIds: ["greenbirdie", "region-nouvelle-aquitaine", "llc-avocats"],
+    amoPartnerIds: ["greenbirdie", "region-nouvelle-aquitaine", "club-eti-na", "llc-avocats"],
     highlights: [
       "Premier contrat PPA multi-acheteurs signé avec des ETI en France, avec 9 entreprises signataires",
       "Centrale photovoltaïque de 23,4 MWc (37 968 panneaux) à Durance, en Lot-et-Garonne, aujourd'hui en production",
