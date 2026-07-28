@@ -13,8 +13,8 @@ export function Logo({ className = "", variant = "dark" }: Props) {
         <Image
           src="/logos/logoTAE.png"
           alt="Territoire Avenir Énergie"
-          width={1696}
-          height={836}
+          width={1024}
+          height={504}
           priority
           className="h-16 w-auto sm:h-20"
         />
